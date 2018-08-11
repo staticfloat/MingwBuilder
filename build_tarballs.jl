@@ -23,7 +23,7 @@ patch -p1 < $WORKSPACE/srcdir/patches/mingw_gcc710_i686.patch || true
 # Install mingw headers
 cd $WORKSPACE/srcdir/mingw-*/mingw-w64-headers
 ./configure \
-    --prefix=${prefix}/${target}/ \
+    --prefix=${prefix}/${target}/sys-root \
     --enable-sdk=all \
     --enable-secure-api \
     --host=${target}
@@ -42,7 +42,7 @@ else
 fi
 
 $WORKSPACE/srcdir/mingw-*/mingw-w64-crt/configure \
-    --prefix=${prefix}/${target} \
+    --prefix=${prefix}/${target}/sys-root \
     --host=${target} \
     ${MINGW_CONF_ARGS}
 make -j${nproc} 
@@ -53,7 +53,7 @@ make install
 mkdir -p $WORKSPACE/srcdir/mingw_winpthreads_build
 cd $WORKSPACE/srcdir/mingw_winpthreads_build
 $WORKSPACE/srcdir/mingw-*/mingw-w64-libraries/winpthreads/configure \
-    --prefix=${prefix}/${target} \
+    --prefix=${prefix}/${target}/sys-root \
     --host=${target} \
     --enable-static \
     --enable-shared
