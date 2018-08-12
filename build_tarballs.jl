@@ -17,17 +17,19 @@ cd $WORKSPACE/srcdir/mingw-*/
 # We need newer configure scripts
 update_configure_scripts
 
+# This is where we'll install everything
+sysroot=${prefix}/${target}/sys-root
+
 # Patch mingw to build 32-bit cross compiler with GCC 7.1+ (This no longer needed with mingw 5.0.3+, so let it fail)
 patch -p1 < $WORKSPACE/srcdir/patches/mingw_gcc710_i686.patch || true
 
 # Install mingw headers
 cd $WORKSPACE/srcdir/mingw-*/mingw-w64-headers
-./configure \
-    --prefix=${prefix}/${target}/sys-root \
+./configure --prefix=/usr \
     --enable-sdk=all \
     --enable-secure-api \
     --host=${target}
-make install
+make install DESTDIR=${sysroot}
 
 # Build CRT
 mkdir -p $WORKSPACE/srcdir/mingw_crt_build
@@ -42,24 +44,24 @@ else
 fi
 
 $WORKSPACE/srcdir/mingw-*/mingw-w64-crt/configure \
-    --prefix=${prefix}/${target}/sys-root \
+    --prefix=/usr \
     --host=${target} \
     ${MINGW_CONF_ARGS}
 make -j${nproc} 
-make install
+make install DESTDIR=${sysroot}
 
 
 # Build winpthreads
 mkdir -p $WORKSPACE/srcdir/mingw_winpthreads_build
 cd $WORKSPACE/srcdir/mingw_winpthreads_build
 $WORKSPACE/srcdir/mingw-*/mingw-w64-libraries/winpthreads/configure \
-    --prefix=${prefix}/${target}/sys-root \
+    --prefix=/usr \
     --host=${target} \
     --enable-static \
     --enable-shared
 
 make -j${nproc}
-make install
+make install DESTDIR=${sysroot}
 """
 
 # These are the platforms we will build for by default, unless further
