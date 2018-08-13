@@ -20,12 +20,13 @@ update_configure_scripts
 # This is where we'll install everything
 sysroot=${prefix}/${target}/sys-root
 
-# Patch mingw to build 32-bit cross compiler with GCC 7.1+ (This no longer needed with mingw 5.0.3+, so let it fail)
+# Patch mingw to build 32-bit cross compiler with GCC 7.1+ (This no longer needed with mingw 5.0.3+,
+# so we let it fail, but leave it in incase we ever need to build an older mingw)
 patch -p1 < $WORKSPACE/srcdir/patches/mingw_gcc710_i686.patch || true
 
 # Install mingw headers
 cd $WORKSPACE/srcdir/mingw-*/mingw-w64-headers
-./configure --prefix=/usr \
+./configure --prefix=/ \
     --enable-sdk=all \
     --enable-secure-api \
     --host=${target}
@@ -44,7 +45,7 @@ else
 fi
 
 $WORKSPACE/srcdir/mingw-*/mingw-w64-crt/configure \
-    --prefix=/usr \
+    --prefix=/ \
     --host=${target} \
     ${MINGW_CONF_ARGS}
 make -j${nproc} 
@@ -55,7 +56,7 @@ make install DESTDIR=${sysroot}
 mkdir -p $WORKSPACE/srcdir/mingw_winpthreads_build
 cd $WORKSPACE/srcdir/mingw_winpthreads_build
 $WORKSPACE/srcdir/mingw-*/mingw-w64-libraries/winpthreads/configure \
-    --prefix=/usr \
+    --prefix=/ \
     --host=${target} \
     --enable-static \
     --enable-shared
